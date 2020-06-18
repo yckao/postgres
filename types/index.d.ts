@@ -240,9 +240,9 @@ declare namespace postgres {
 
   type HelperSerializable = { [index: string]: SerializableParameter } | { [index: string]: SerializableParameter }[];
 
-  interface Row {
+  type Row = {
     [column: string]: any;
-  }
+  } | undefined
 
   interface Column<T extends string> {
     name: T;
