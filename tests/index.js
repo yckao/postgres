@@ -113,6 +113,15 @@ t('Json', async() => {
 
 t('Empty array', async() =>
   [true, Array.isArray((await sql`select ${ sql.array([]) }::int[] as x`)[0].x)]
+t('Partial', async () => {
+  const x = (await sql`select ${sql.partial`${true}`} as x`)[0].x
+  return [true, x]
+})
+
+t('Skip', async () => {
+  const x = (await sql`select ${sql.skip()}${'hello'} as x`)[0].x
+  return ['hello', x]
+})
 )
 
 t('Array of Integer', async() =>
@@ -1060,3 +1069,21 @@ t('no_prepare: true disables prepared transactions', async() => {
   const result = await sql`select * from pg_prepared_statements`
   return [0, result.count]
 })
+
+t('Single layer partial query', async () => {
+  const x = (await sql`select ${sql.partial`${'hello'} as x`}`)[0].x
+  return ['hello', x]
+})
+
+t('Multi layer partial query', async () => {
+  const layer1 = sql.partial`${'hello'}`
+  const layer2 = sql.partial`${layer1} as x`
+  const x = (await sql`select ${layer2}`)[0].x
+  return ['hello', x]
+})
+
+t('Partial with skip', async () => {
+  const row = (await sql`select ${true ? sql.partial`${1} as a` : sql.skip()}${false ? sql.partial`, ${2} as b` : sql.skip()}`)[0]
+  return [true, row.a === '1' && row.b === undefined]
+})
+
