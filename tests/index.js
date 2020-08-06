@@ -111,8 +111,10 @@ t('Json', async() => {
   return [true, x.a === 1 && x.b === 'hello']
 })
 
-t('Empty array', async() =>
+t('Empty array', async() => 
   [true, Array.isArray((await sql`select ${ sql.array([]) }::int[] as x`)[0].x)]
+)
+
 t('Partial', async () => {
   const x = (await sql`select ${sql.partial`${true}`} as x`)[0].x
   return [true, x]
@@ -122,7 +124,6 @@ t('Skip', async () => {
   const x = (await sql`select ${sql.skip()}${'hello'} as x`)[0].x
   return ['hello', x]
 })
-)
 
 t('Array of Integer', async() =>
   ['3', (await sql`select ${ sql.array([1, 2, 3]) } as x`)[0].x[2]]
@@ -284,7 +285,7 @@ t('Throw syntax error', async() =>
 
 t('Connect using uri', async() =>
   [true, await new Promise((resolve, reject) => {
-    const sql = postgres('postgres://' + login.user + ':' + (login.pass || '') + '@localhost:5432/' + options.db, {
+    const sql = postgres('postgres://' + login.user + ':' + (login.pass || '') + `@${process.env.PGHOST}:5432/` + options.db, {
       idle_timeout: options.idle_timeout
     })
     sql`select 1`.then(() => resolve(true), reject)
@@ -293,7 +294,7 @@ t('Connect using uri', async() =>
 
 t('Fail with proper error on no host', async() =>
   ['ECONNREFUSED', (await new Promise((resolve, reject) => {
-    const sql = postgres('postgres://localhost:33333/' + options.db, {
+    const sql = postgres(`postgres://${process.env.PGHOST}:33333/` + options.db, {
       idle_timeout: options.idle_timeout
     })
     sql`select 1`.then(reject, resolve)
