@@ -265,14 +265,12 @@ t('Helpers in Transaction', async() => {
   ))[0].x]
 })
 
-t('Undefined values throws', async() => {
-  let error
-
-  await sql`
-    select ${ undefined } as x
+t('Undefined values skip', async() => {
+  const [{ x }] = await sql`
+    select ${ undefined }1 as x
   `.catch(x => error = x.code)
 
-  return ['UNDEFINED_VALUE', error]
+  return ['1', x]
 })
 
 t('Null sets to null', async() =>

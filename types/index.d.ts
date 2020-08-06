@@ -293,7 +293,7 @@ declare namespace postgres {
      * @param args Interpoled values of the template string
      * @returns A promise resolving to the result of your query
      */
-    <T extends Row | Row[] = Row>(template: TemplateStringsArray, ...args: SerializableParameter[]): PendingQuery<T extends Row[] ? T : T[]>;
+    <T extends Row | Row[] = Row>(template: TemplateStringsArray, ...args: (SerializableParameter | undefined)[]): PendingQuery<T extends Row[] ? T : T[]>;
 
     /**
      * Escape column names
