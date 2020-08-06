@@ -18,12 +18,13 @@ services:
       context: ./node
       args:
         - NODE_TAG:lts
-    command: ["npm", "run", "test"]
+    command: ["bash", "ci/wait-for-postgres.sh", "postgres-test", "--", "npm", "run", "test"]
     working_dir: /app
     volumes:
       - socket:/socket
       - ../:/app
     environment:
+      - POSTGRES_PASSWORD=dummy
       - PGUSER=postgres
       - PGHOST=postgres-test
       - PGSOCKET=/socket
