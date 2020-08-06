@@ -1,0 +1,34 @@
+version: "3"
+
+services:
+  postgres-test:
+    build: 
+      context: ./postgres
+      args: 
+        - POSTGRES_TAG=12
+    environment:
+      - POSTGRES_PASSWORD=dummy
+    volumes:
+      - socket:/socket
+    ports:
+      - "5432"
+
+  test:
+    build:
+      context: ./node
+      args:
+        - NODE_TAG:lts
+    command: ["npm", "run", "test"]
+    working_dir: /app
+    volumes:
+      - socket:/socket
+      - ../:/app
+    environment:
+      - PGUSER=postgres
+      - PGHOST=postgres-test
+      - PGSOCKET=/socket
+    depends_on: 
+      - postgres-test
+
+volumes:
+  socket:
