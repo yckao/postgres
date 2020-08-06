@@ -67,4 +67,5 @@ function exit() {
   !only && success && !ignored
     ? console.log('All good')
     : process.exit(1) // eslint-disable-line
+  process.exit(0)
 }
